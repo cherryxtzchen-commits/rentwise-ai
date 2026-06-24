@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苏州租房地图</title>
+    <!-- 引入自定义样式 -->
+    <link rel="stylesheet" href="style.css?v=3">
+</head>
+<body>
+    <!-- 顶部搜索栏 -->
+    <header class="header">
+        <div class="search-bar">
+            <input type="text" placeholder="搜索区域、地铁或居住偏好…" id="searchInput">
+        </div>
+        
+        <!-- 筛选器区域 -->
+        <div class="filter-bar">
+            <div class="filter-group">
+                <div class="filter-label">预算</div>
+                <div class="filter-options" data-filter="price">
+                    <button class="filter-btn active" data-value="all">不限</button>
+                    <button class="filter-btn" data-value="0-1000">1000以下</button>
+                    <button class="filter-btn" data-value="1000-2000">1000-2000</button>
+                    <button class="filter-btn" data-value="2000+">2000以上</button>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-label">地铁</div>
+                <div class="filter-options" data-filter="subway">
+                    <button class="filter-btn active" data-value="all">不限</button>
+                    <button class="filter-btn" data-value="500">500m内</button>
+                    <button class="filter-btn" data-value="1000">1km内</button>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-label">AI推荐</div>
+                <div class="filter-options" data-filter="ai">
+                    <button class="filter-btn active" data-value="all">全部</button>
+                    <button class="filter-btn" data-value="recommended">AI高分</button>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-label">通勤</div>
+                <div class="filter-options" data-filter="district">
+                    <button class="filter-btn active" data-value="all">不限</button>
+                    <button class="filter-btn" data-value="园区">园区优先</button>
+                    <button class="filter-btn" data-value="市区">市中心优先</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI 智能筛选 -->
+        <div class="ai-filter-section">
+            <div class="ai-filter-label">AI 智能推荐</div>
+            <div class="ai-filter-chips">
+                <button class="ai-chip active" data-filter="all">
+                    <span class="ai-chip-icon">✨</span>
+                    <span class="ai-chip-text">综合推荐</span>
+                </button>
+                <button class="ai-chip" data-filter="mrt">
+                    <span class="ai-chip-icon">🚇</span>
+                    <span class="ai-chip-text">地铁沿线</span>
+                </button>
+                <button class="ai-chip" data-filter="budget">
+                    <span class="ai-chip-icon">💰</span>
+                    <span class="ai-chip-text">预算友好</span>
+                </button>
+                <button class="ai-chip" data-filter="solo">
+                    <span class="ai-chip-icon">👤</span>
+                    <span class="ai-chip-text">独居首选</span>
+                </button>
+                <button class="ai-chip" data-filter="family">
+                    <span class="ai-chip-icon">👨‍👩‍👧</span>
+                    <span class="ai-chip-text">家庭宜居</span>
+                </button>
+                <button class="ai-chip" data-filter="cbd">
+                    <span class="ai-chip-icon">🏙️</span>
+                    <span class="ai-chip-text">CBD可达</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <!-- 左侧房源列表 -->
+        <aside class="sidebar">
+            <h2 id="resultCount">0 个房源</h2>
+            <div id="houseList" class="house-list">
+                <!-- 房源卡片将通过JS动态生成 -->
+            </div>
+        </aside>
+
+        <!-- 右侧地图区域 -->
+        <section class="map-wrapper">
+            <div id="map" class="map"></div>
+            
+            <!-- AI 分析浮层 -->
+            <div id="aiOverlay" class="ai-overlay">
+                <div class="ai-card">
+                    <button class="ai-close" onclick="closeAiOverlay()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                    
+                    <div class="ai-header">
+                        <div class="ai-property-row">
+                            <div class="ai-property-name" id="aiPropertyName">点击房源查看分析</div>
+                            <span class="reasoning-dot" id="reasoningDot"></span>
+                        </div>
+                        <div class="ai-rent-range" id="aiRentRange"></div>
+                    </div>
+                    
+                    <div class="ai-analysis-section">
+                        <div class="ai-section-label">推荐原因</div>
+                        <p class="ai-analysis-text" id="aiAnalysisText">选择一个房源查看 AI 分析结果</p>
+                    </div>
+                    
+                    <div class="ai-pros">
+                        <div class="ai-section-label">匹配依据</div>
+                        <ul id="aiPros">
+                            <li>加载中...</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="ai-cons">
+                        <div class="ai-section-label">需要注意</div>
+                        <ul id="aiCons">
+                            <li>加载中...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 引入高德地图API -->
+    <!-- 请将下面的 YOUR_API_KEY 替换为你的高德地图JS API Key -->
+    <script src="https://webapi.amap.com/maps?v=2.0&key=0319fd291ef54193dbee53b8fac88ba7"></script>
+    
+    <!-- 引入自定义脚本 -->
+    <script src="app.js"></script>
+</body>
+</html>
